@@ -4,22 +4,14 @@ class Player
 		p message if DEBUG_ON
 	end
 
-
-	def initialize
-  	end
 ###########################
 #Play_turn, where the magic happens.
 ###########################
 	def play_turn(warrior)
-		#set global variable for warrior for the other def's
-		@warrior = warrior
-
-		#set health variables if first turn
-		@health ||= warrior.health
-		@MAX_HEALTH ||= warrior.health #Max health is always 20, but i like to set it like this incase it changes in a future version of rubywarrior
-
-		#set state variables
-		@running_away ||= false
+		#set global variables for warrior for the other def's
+    @warrior = warrior
+    
+		set_variables warrior
 
     #All the below variables will return true if they do a ! action
 		heal || run ||shoot_back|| attack || rescue_captive || turn || walk
@@ -27,7 +19,15 @@ class Player
     #set health to track is we are being hurt
 		@health = warrior.health
   	end
-  
+
+  def set_variables(warrior)
+    #set health variables if first turn
+		@health ||= warrior.health
+		@MAX_HEALTH ||= warrior.health #Max health is always 20, but i like to set it like this incase it changes in a future version of rubywarrior
+
+		#set state variables
+		@running_away ||= false
+  end
 
 ###########################
 # the below functions are all actions.
@@ -129,14 +129,11 @@ class Player
 
     def long_range_enemy_in_view?(direction)
       ob = objects_in_view(direction)
-    ob.first && ob.first.enemy? && %{a w}.include?(ob.first.character)
+      ob.first && ob.first.enemy? && %{a w}.include?(ob.first.character)
     end
 
   def objects_in_view(direction)
-    @warrior.look(direction).select { |o| 
-      
-      o.wall? || !o.empty?
-    } 
+    @warrior.look(direction).select { |space|   !space.empty?  } 
   end
   
   def safe?
